@@ -155,6 +155,105 @@ GET /movies/search
 }
 ```
 
+#### Create Movie (Admin Only)
+```
+POST /movies
+```
+**Headers:** Authorization required (Admin role)
+
+**Request Body:**
+```json
+{
+  "title": "New Movie",
+  "description": "Movie description",
+  "genre": "Action",
+  "release_year": 2023,
+  "duration": 120,
+  "video_url": "https://example.com/video.mp4",
+  "thumbnail_url": "https://example.com/thumbnail.jpg",
+  "trailer_url": "https://example.com/trailer.mp4",
+  "is_premium": false
+}
+```
+
+**Response:**
+```json
+{
+  "id": 101,
+  "title": "New Movie",
+  "description": "Movie description",
+  "genre": "Action",
+  "release_year": 2023,
+  "duration": 120,
+  "video_url": "https://example.com/video.mp4",
+  "thumbnail_url": "https://example.com/thumbnail.jpg",
+  "trailer_url": "https://example.com/trailer.mp4",
+  "is_premium": false,
+  "created_at": "2025-01-01T00:00:00Z"
+}
+```
+
+Notes:
+- **Authentication:** JWT via `Authorization: Bearer <token>`.
+- **Request Validation:** required fields: `title`, `genre`, `release_year`, `duration`.
+- **Authorization:** Admin role required.
+- **Response Model:** returns created movie resource.
+- **Error Handling:** 400 validation, 401 unauthorized, 403 forbidden, 409 duplicate title, 500 server.
+- **Performance:** validate URLs, consider async upload handling if storing media.
+- **Logging:** log actor `user_id`, payload summary, and outcome.
+
+#### Update Movie (Admin Only)
+```
+PUT /movies/{movie_id}
+```
+**Headers:** Authorization required (Admin role)
+
+**Request Body:**
+```json
+{
+  "title": "Updated Movie Title",
+  "description": "Updated description",
+  "genre": "Drama",
+  "release_year": 2024,
+  "duration": 118,
+  "video_url": "https://example.com/video.mp4",
+  "thumbnail_url": "https://example.com/thumbnail.jpg",
+  "trailer_url": "https://example.com/trailer.mp4",
+  "is_premium": true
+}
+```
+
+Fields are optional; only provided fields are updated.
+
+**Response:**
+```json
+{
+  "message": "Movie updated successfully",
+  "movie": {
+    "id": 101,
+    "title": "Updated Movie Title",
+    "description": "Updated description",
+    "genre": "Drama",
+    "release_year": 2024,
+    "duration": 118,
+    "video_url": "https://example.com/video.mp4",
+    "thumbnail_url": "https://example.com/thumbnail.jpg",
+    "trailer_url": "https://example.com/trailer.mp4",
+    "is_premium": true,
+    "updated_at": "2025-01-01T00:00:00Z"
+  }
+}
+```
+
+Notes:
+- **Authentication:** JWT required.
+- **Request Validation:** validate field types; ignore unknown fields.
+- **Authorization:** Admin role required.
+- **Response Model:** confirmation message + updated movie resource.
+- **Error Handling:** 400 validation, 401 unauthorized, 403 forbidden, 404 movie not found, 409 duplicate title, 500 server.
+- **Performance:** patch-style updates to minimize writes.
+- **Logging:** log `movie_id`, `user_id`, changed fields.
+
 ### User Profile Endpoints
 
 #### Get User Profile

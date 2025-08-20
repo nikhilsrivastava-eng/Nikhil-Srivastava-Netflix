@@ -38,11 +38,9 @@ This document outlines the system architecture for the Netflix clone streaming p
 - id: Integer (Primary Key, Auto-increment)
 - email: String (Unique, Required)
 - password_hash: String (Required)
-- first_name: String (Required)
-- last_name: String (Required)
+- name: String (Required)
 - profile_picture: String (URL)
 - role: String (Default: 'user', Options: 'user', 'admin')
-- is_active: Boolean (Default: true)
 - created_at: Timestamp
 - updated_at: Timestamp
 

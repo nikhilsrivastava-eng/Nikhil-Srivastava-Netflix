@@ -1,0 +1,23 @@
+[project]
+name = "server"
+version = "0.1.0"
+description = "FastAPI server"
+authors = [
+    { name = "Nikhil", email = "" }
+]
+dependencies = [
+    "fastapi[standard]",
+    "uvicorn[standard]",
+    "sqlalchemy",
+    "python-jose[cryptography]",
+    "passlib[bcrypt]",
+    "pydantic",
+]
+
+requires-python = ">=3.9"
+
+[project.optional-dependencies]
+test = [
+    "pytest",
+]
+
