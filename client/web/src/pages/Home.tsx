@@ -1,9 +1,11 @@
 import React from 'react';
+import MainLayout from '../components/layout/MainLayout';
 import { Link } from 'react-router-dom';
 import { Button, Card } from '../ui';
 
 const Home: React.FC = () => {
   return (
+    <MainLayout>
     <div className="min-h-screen bg-black text-white">
       <header className="border-b border-white/10 bg-gradient-to-b from-black to-transparent">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
@@ -62,6 +64,7 @@ const Home: React.FC = () => {
         </section>
       </main>
     </div>
+    </MainLayout>
   );
 };
 

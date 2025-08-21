@@ -15,8 +15,8 @@ SECRET_KEY = os.getenv("SECRET_KEY", "CHANGE_ME_DEV_ONLY_SECRET")
 ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", str(60 * 24 * 7)))
 COOKIE_NAME = os.getenv("JWT_COOKIE_NAME", "access_token")
-COOKIE_SECURE = os.getenv("JWT_COOKIE_SECURE", "false").lower() == "true"
-COOKIE_SAMESITE = os.getenv("JWT_COOKIE_SAMESITE", "lax")
+COOKIE_SECURE = os.getenv("JWT_COOKIE_SECURE", "true").lower() == "true"
+COOKIE_SAMESITE = os.getenv("JWT_COOKIE_SAMESITE", "none")
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -48,7 +48,13 @@ def set_auth_cookie(response: Response, token: str) -> None:
 
 
 def clear_auth_cookie(response: Response) -> None:
-    response.delete_cookie(key=COOKIE_NAME, path="/")
+    # Mirror attributes used in set_auth_cookie so deletion matches exactly
+    response.delete_cookie(
+        key=COOKIE_NAME,
+        path="/",
+        secure=COOKIE_SECURE,
+        samesite=COOKIE_SAMESITE,
+    )
 
 
 def _extract_token_from_cookie(request: Request) -> Optional[str]:
@@ -60,6 +66,7 @@ async def get_current_user(
     db: Session = Depends(get_db),
 ) -> User:
     token = _extract_token_from_cookie(request)
+    print(request.cookies)
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not authenticated")
     try:

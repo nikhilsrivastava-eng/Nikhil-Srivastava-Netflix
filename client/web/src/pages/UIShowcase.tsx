@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import MainLayout from '../components/layout/MainLayout';
 import {
   Button,
   Input,
@@ -47,6 +48,7 @@ const UIShowcase: React.FC = () => {
   };
 
   return (
+    <MainLayout>
     <div className="min-h-screen bg-black text-white p-8">
       <div className="max-w-6xl mx-auto space-y-12">
         {/* Header */}
@@ -280,6 +282,7 @@ const UIShowcase: React.FC = () => {
         </div>
       </div>
     </div>
+    </MainLayout>
   );
 };
 

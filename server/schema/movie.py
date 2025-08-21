@@ -56,3 +56,8 @@ class MovieOut(BaseModel):
 class UpdateMovieResponse(BaseModel):
     message: str = "Movie updated successfully"
     movie: MovieOut
+
+
+class MovieVideoUploadResponse(BaseModel):
+    video_url: str
+    playlist_filename: str

@@ -1,11 +1,24 @@
 import logging
 from contextlib import asynccontextmanager
+from pathlib import Path
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from sqlalchemy.exc import SQLAlchemyError
+
+# Load env vars early so downstream modules (e.g., Cloudinary) pick them up
+try:
+    from dotenv import load_dotenv  # type: ignore
+    # Try project root .env then server/.env
+    project_root = Path(__file__).resolve().parents[1]
+    server_dir = Path(__file__).resolve().parent
+    load_dotenv(project_root / ".env")
+    load_dotenv(server_dir / ".env")
+except Exception:
+    # dotenv not available; ignore in prod
+    pass
 
 from server.db import Base, engine, get_db
 from server.routes import auth as auth_routes

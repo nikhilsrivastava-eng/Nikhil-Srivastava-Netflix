@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { authApi } from '../api/authapi';
 import type { AuthResponse, LoginRequest, SignupRequest, UserOut } from '../api/types/auth';
 
@@ -17,7 +18,7 @@ interface AuthState {
   resetError: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>()(persist((set) => ({
   user: null,
   accessToken: null,
   status: 'idle',
@@ -57,6 +58,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       set({ user: me, status: 'succeeded' });
     } catch (e: any) {
       set({ user: null, accessToken: null, status: 'failed', error: e?.message || 'Fetch me failed' });
+      // Clear persisted auth on failed me() to avoid stale rehydration on refresh
+      try {
+        localStorage.removeItem('auth');
+        localStorage.removeItem('zustand:auth');
+      } catch {}
     }
   },
 
@@ -65,9 +71,23 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       await authApi.logout();
       set({ user: null, accessToken: null, status: 'succeeded' });
+      // Explicitly clear persisted storage so no stale details remain
+      try {
+        localStorage.removeItem('auth');
+        localStorage.removeItem('zustand:auth');
+      } catch {}
     } catch (e: any) {
       set({ status: 'failed', error: e?.message || 'Logout failed' });
       throw e;
     }
+  },
+}), {
+  name: 'auth',
+  storage: createJSONStorage(() => localStorage),
+  // Do not persist user or token; we rely on HTTP-only cookie and /auth/me
+  partialize: () => ({}),
+  onRehydrateStorage: () => (state) => {
+    // After rehydration, immediately sync with server
+    try { state?.fetchMe?.(); } catch {}
   },
 }));

@@ -32,6 +32,19 @@ def create_movie(db: Session, *, data: Dict[str, Any]) -> Movie:
     return movie
 
 
+def get_movie(db: Session, *, movie_id: int) -> Movie:
+    """
+    Retrieve a single movie by id.
+
+    Business rules:
+    - If not found, raise ValueError("NOT_FOUND") to let route map to 404.
+    """
+    movie: Optional[Movie] = db.query(Movie).filter(Movie.id == movie_id).first()
+    if not movie:
+        raise ValueError("NOT_FOUND")
+    return movie
+
+
 def update_movie(db: Session, *, movie_id: int, data: Dict[str, Any]) -> Movie:
     movie: Optional[Movie] = db.query(Movie).filter(Movie.id == movie_id).first()
     if not movie:
